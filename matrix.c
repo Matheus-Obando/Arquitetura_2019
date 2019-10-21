@@ -4,7 +4,6 @@
 *Date: 17/10/2019
 *Note: Still needs to get execution time
 */
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -12,14 +11,14 @@
 #include<time.h>
 #include<semaphore.h>
 
-#define PEQUENA 4
-#define MEDIA  40
-#define GRANDE 400
+#define PEQUENA 8
+#define MEDIA  200
+#define GRANDE 600
 
 int **matrixA, **matrixB, **matrixC;
-int divRes, order, nthreads;
+int divRes, divMod, order, nthreads;
 
-sem_t mutex;
+//sem_t mutex;
 
 int getMatrixOrder(char *size){
     if(strcmp(size, "pequena") == 0){
@@ -74,12 +73,8 @@ void multiplyMatrices(int **matrixA, int **matrixB, int **matrixC, int order){
             for(k = 0; k < order; k++){
                 product += matrixA[i][k] * matrixB[k][j];
             }
-            // Critical section 
-            //sem_wait(&mutex);
             matrixC[i][j] = product;
             product = 0;
-            //sem_post(&mutex);
-            // End of critical section
         }
     }
 }
@@ -88,16 +83,23 @@ void *multiplyMatricesThread(void *arg){
     // Multiplying: 
     int i, j, k, product = 0, *aux = arg;
     int id = *aux;
-    for(i = (id*divRes); i < (id+1)*divRes; i++){
+    int rest;
+
+    if((id+1) == nthreads){
+        rest = divMod;
+    }
+    else{
+        rest = 0;
+    }
+
+    for(i = (id*divRes); i < ((id+1)*divRes)+rest; i++){
         for(j = 0; j < order; j++){
-            // Critical section
-            //sem_wait(&mutex)
             for(k = 0; k < order; k++){
                 product += matrixA[i][k] * matrixB[k][j];
             } 
+            //printf("id: %d, Product = %d\n",id,product);
             matrixC[i][j] = product;
             product = 0;
-            // End of critical section
         }
     }
 }
@@ -107,12 +109,15 @@ int main(int argc, char const *argv[])
     // Initial feedback from command line
     srand(time(NULL));
     printf("TAMANHO DA MATRIZ: %s\n",argv[1]); // matrix 'size' argument position on command line
-    nthreads = argv[2][0] - '0';
+    nthreads = strtol(argv[2],NULL,10);
     printf("QUANTIDADE DE THREADS: %d\n\n",nthreads);
 
     //Matrix creating section
     order = getMatrixOrder(argv[1]);
     divRes = order/nthreads;
+    divMod = order%nthreads;
+    printf("%d/%d = %d\n\n",order,nthreads,divRes);
+    printf("%d/%d = %d\n\n",order,nthreads,divMod);
     matrixA = createMatrix(order);
     matrixB = createMatrix(order);
     matrixC = createMatrix(order);
@@ -129,28 +134,29 @@ int main(int argc, char const *argv[])
     }
 
     else if(nthreads > 1){
+
         //Threads creating section
-    
         pthread_t *threads = (pthread_t*)malloc(nthreads*sizeof(pthread_t));
         int *id = (int*)malloc(nthreads*sizeof(int));
+
+        //multiplyMatrices(matrixA, matrixB, matrixC, order); // index still setted with 0, it will not affect the execution
+        //printMatrix(matrixC,order);
+        //matrixC = createMatrix(order);
 
         for(int i = 0; i < nthreads; i++){
             id[i] = i;
             pthread_create(&threads[i], NULL, multiplyMatricesThread, &id[i]);
         }
-
         for(int i = 0; i < nthreads; i++){
             pthread_join(threads[i], NULL);
         }
 
-        //printMatrix(matrixC, order);
+        printMatrix(matrixC, order);
         printf("Terminado!\n");
 
     }
-
     else{
         printf("Erro, número de threads inválido\n");
     }
-
     return 0;
 }
