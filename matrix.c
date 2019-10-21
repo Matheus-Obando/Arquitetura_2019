@@ -2,7 +2,7 @@
 *Author: Matheus Obando
 *Status: Ongoing
 *Date: 17/10/2019
-*Note: Multiplication with threads still not working
+*Note: Still needs to get execution time
 */
 
 #include<stdio.h>
@@ -12,9 +12,9 @@
 #include<time.h>
 #include<semaphore.h>
 
-#define PEQUENA 8
+#define PEQUENA 4
 #define MEDIA  40
-#define GRANDE 80
+#define GRANDE 400
 
 int **matrixA, **matrixB, **matrixC;
 int divRes, order, nthreads;
@@ -87,17 +87,16 @@ void multiplyMatrices(int **matrixA, int **matrixB, int **matrixC, int order){
 void *multiplyMatricesThread(void *arg){
     // Multiplying: 
     int i, j, k, product = 0, *aux = arg;
-    int id = *aux; 
+    int id = *aux;
     for(i = (id*divRes); i < (id+1)*divRes; i++){
-        for(j = (id*divRes); j < (id+1)*divRes; j++){
+        for(j = 0; j < order; j++){
             // Critical section
-            sem_wait(&mutex);
-            for(k = (id*divRes); k < (id+1)*divRes; k++){
+            //sem_wait(&mutex)
+            for(k = 0; k < order; k++){
                 product += matrixA[i][k] * matrixB[k][j];
             } 
             matrixC[i][j] = product;
             product = 0;
-            sem_post(&mutex);
             // End of critical section
         }
     }
@@ -121,8 +120,8 @@ int main(int argc, char const *argv[])
     putMatrixValues(matrixA, order);
     putMatrixValues(matrixB, order);
 
-    printMatrix(matrixA, order);
-    printMatrix(matrixB, order);
+    //printMatrix(matrixA, order);
+    //printMatrix(matrixB, order);
 
     if (nthreads == 1){
         multiplyMatrices(matrixA, matrixB, matrixC, order); // index still setted with 0, it will not affect the execution
@@ -144,7 +143,9 @@ int main(int argc, char const *argv[])
             pthread_join(threads[i], NULL);
         }
 
-        printMatrix(matrixC, order);    
+        //printMatrix(matrixC, order);
+        printf("Terminado!\n");
+
     }
 
     else{
