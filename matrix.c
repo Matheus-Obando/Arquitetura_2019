@@ -8,9 +8,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<pthread.h> // use -lpthread -lrt on terminal to compilate
-#include<time.h>
 #include<sys/time.h>
-#include<semaphore.h>
 
 #define PEQUENA 500
 #define MEDIA  1000
@@ -18,8 +16,6 @@
 
 int **matrixA, **matrixB, **matrixC;
 int divRes, divMod, order, nthreads;
-
-//sem_t mutex;
 
 int getMatrixOrder(char *size){
     if(strcmp(size, "pequena") == 0){
@@ -123,19 +119,19 @@ int main(int argc, char const *argv[])
     putMatrixValues(matrixA, order);
     putMatrixValues(matrixB, order);
 
-    // Remove the commentary to see the values inside both matrices
+    //Remove the commentary to see the values inside both matrices
     //printMatrix(matrixA, order);
     //printMatrix(matrixB, order);
 
     if (nthreads == 1){
         gettimeofday(&start, NULL);
-        multiplyMatrices(matrixA, matrixB, matrixC, order); // index still setted with 0, it will not affect the execution
+        multiplyMatrices(matrixA, matrixB, matrixC, order); //index still setted with 0, it will not affect the execution
         //printMatrix(matrixC,order);
         gettimeofday(&end, NULL);
 
 	    long seconds = (end.tv_sec - start.tv_sec);
 	    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-	    printf("Time elapased: %ld seconds and %ld micros\n", seconds, micros);
+	    printf("Tempo decorrido da multiplicação: %ld segundos e %ld microssegundos\n\n", seconds, micros);
     }
 
     else if(nthreads > 1){
@@ -156,12 +152,12 @@ int main(int argc, char const *argv[])
 
 	    long seconds = (end.tv_sec - start.tv_sec);
 	    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-	    printf("Time elapased: %ld seconds and %ld micros\n", seconds, micros);
+	    printf("Tempo decorrido da multiplicação: %ld segundos e %ld microssegundos\n\n", seconds, micros);
         //printMatrix(matrixC, order); // product matrix
 
     }
     else{
-        printf("Error, invalid number of threads\n");
+        printf("Error, numero de threads invalido\n");
     }
 
     return 0;
