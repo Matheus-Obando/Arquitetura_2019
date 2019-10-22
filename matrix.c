@@ -1,19 +1,20 @@
 /*
 *Author: Matheus Obando
-*Status: Ongoing
+*Status: Finished (can still update)
 *Date: 17/10/2019
-*Note: Still needs to get execution time
+*Note: Done
 */
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include<pthread.h> // use -lpthread -lrt on terminal to compilate with the pthread.h library
+#include<pthread.h> // use -lpthread -lrt on terminal to compilate
 #include<time.h>
+#include<sys/time.h>
 #include<semaphore.h>
 
-#define PEQUENA 8
-#define MEDIA  200
-#define GRANDE 600
+#define PEQUENA 500
+#define MEDIA  1000
+#define GRANDE 2000
 
 int **matrixA, **matrixB, **matrixC;
 int divRes, divMod, order, nthreads;
@@ -65,8 +66,6 @@ void printMatrix(int **matrix, int order){
 }
 
 void multiplyMatrices(int **matrixA, int **matrixB, int **matrixC, int order){
-    // Multiplica:
-    //int **result = createMatrix(order);
     int i, j, k,product = 0; 
     for(i = 0; i < order; i++){
         for(j = 0; j < order; j++){
@@ -79,8 +78,7 @@ void multiplyMatrices(int **matrixA, int **matrixB, int **matrixC, int order){
     }
 }
 
-void *multiplyMatricesThread(void *arg){
-    // Multiplying: 
+void *multiplyMatricesThread(void *arg){ 
     int i, j, k, product = 0, *aux = arg;
     int id = *aux;
     int rest;
@@ -97,7 +95,6 @@ void *multiplyMatricesThread(void *arg){
             for(k = 0; k < order; k++){
                 product += matrixA[i][k] * matrixB[k][j];
             } 
-            //printf("id: %d, Product = %d\n",id,product);
             matrixC[i][j] = product;
             product = 0;
         }
@@ -106,6 +103,8 @@ void *multiplyMatricesThread(void *arg){
 
 int main(int argc, char const *argv[])
 {
+    struct timeval start, end; // To get the time lapse
+
     // Initial feedback from command line
     srand(time(NULL));
     printf("TAMANHO DA MATRIZ: %s\n",argv[1]); // matrix 'size' argument position on command line
@@ -116,8 +115,7 @@ int main(int argc, char const *argv[])
     order = getMatrixOrder(argv[1]);
     divRes = order/nthreads;
     divMod = order%nthreads;
-    printf("%d/%d = %d\n\n",order,nthreads,divRes);
-    printf("%d/%d = %d\n\n",order,nthreads,divMod);
+
     matrixA = createMatrix(order);
     matrixB = createMatrix(order);
     matrixC = createMatrix(order);
@@ -125,12 +123,19 @@ int main(int argc, char const *argv[])
     putMatrixValues(matrixA, order);
     putMatrixValues(matrixB, order);
 
+    // Remove the commentary to see the values inside both matrices
     //printMatrix(matrixA, order);
     //printMatrix(matrixB, order);
 
     if (nthreads == 1){
+        gettimeofday(&start, NULL);
         multiplyMatrices(matrixA, matrixB, matrixC, order); // index still setted with 0, it will not affect the execution
-        printMatrix(matrixC,order);
+        //printMatrix(matrixC,order);
+        gettimeofday(&end, NULL);
+
+	    long seconds = (end.tv_sec - start.tv_sec);
+	    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+	    printf("Time elapased: %ld seconds and %ld micros\n", seconds, micros);
     }
 
     else if(nthreads > 1){
@@ -139,10 +144,7 @@ int main(int argc, char const *argv[])
         pthread_t *threads = (pthread_t*)malloc(nthreads*sizeof(pthread_t));
         int *id = (int*)malloc(nthreads*sizeof(int));
 
-        //multiplyMatrices(matrixA, matrixB, matrixC, order); // index still setted with 0, it will not affect the execution
-        //printMatrix(matrixC,order);
-        //matrixC = createMatrix(order);
-
+        gettimeofday(&start, NULL);
         for(int i = 0; i < nthreads; i++){
             id[i] = i;
             pthread_create(&threads[i], NULL, multiplyMatricesThread, &id[i]);
@@ -150,13 +152,17 @@ int main(int argc, char const *argv[])
         for(int i = 0; i < nthreads; i++){
             pthread_join(threads[i], NULL);
         }
+        gettimeofday(&end, NULL);
 
-        printMatrix(matrixC, order);
-        printf("Terminado!\n");
+	    long seconds = (end.tv_sec - start.tv_sec);
+	    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+	    printf("Time elapased: %ld seconds and %ld micros\n", seconds, micros);
+        //printMatrix(matrixC, order); // product matrix
 
     }
     else{
-        printf("Erro, número de threads inválido\n");
+        printf("Error, invalid number of threads\n");
     }
+
     return 0;
 }
