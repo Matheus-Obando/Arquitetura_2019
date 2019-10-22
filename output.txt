@@ -1,0 +1,60 @@
+TAMANHO DA MATRIZ: pequena
+QUANTIDADE DE THREADS: 1
+
+Tempo decorrido da multiplicação: 1 segundos e 618674 microssegundos
+
+TAMANHO DA MATRIZ: pequena
+QUANTIDADE DE THREADS: 2
+
+Tempo decorrido da multiplicação: 0 segundos e 311399 microssegundos
+
+TAMANHO DA MATRIZ: pequena
+QUANTIDADE DE THREADS: 4
+
+Tempo decorrido da multiplicação: 1 segundos e 317693 microssegundos
+
+TAMANHO DA MATRIZ: pequena
+QUANTIDADE DE THREADS: 8
+
+Tempo decorrido da multiplicação: 0 segundos e 323657 microssegundos
+
+TAMANHO DA MATRIZ: media
+QUANTIDADE DE THREADS: 1
+
+Tempo decorrido da multiplicação: 7 segundos e 7067165 microssegundos
+
+TAMANHO DA MATRIZ: media
+QUANTIDADE DE THREADS: 2
+
+Tempo decorrido da multiplicação: 4 segundos e 3642524 microssegundos
+
+TAMANHO DA MATRIZ: media
+QUANTIDADE DE THREADS: 4
+
+Tempo decorrido da multiplicação: 3 segundos e 3701242 microssegundos
+
+TAMANHO DA MATRIZ: media
+QUANTIDADE DE THREADS: 8
+
+Tempo decorrido da multiplicação: 4 segundos e 3587555 microssegundos
+
+TAMANHO DA MATRIZ: grande
+QUANTIDADE DE THREADS: 1
+
+Tempo decorrido da multiplicação: 74 segundos e 73889467 microssegundos
+
+TAMANHO DA MATRIZ: grande
+QUANTIDADE DE THREADS: 2
+
+Tempo decorrido da multiplicação: 37 segundos e 37107386 microssegundos
+
+TAMANHO DA MATRIZ: grande
+QUANTIDADE DE THREADS: 4
+
+Tempo decorrido da multiplicação: 35 segundos e 34569056 microssegundos
+
+TAMANHO DA MATRIZ: grande
+QUANTIDADE DE THREADS: 8
+
+Tempo decorrido da multiplicação: 35 segundos e 34884000 microssegundos
+
